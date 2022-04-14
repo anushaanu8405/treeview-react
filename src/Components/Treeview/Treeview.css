@@ -5,6 +5,7 @@
 
 .tree-item summary {
     padding-bottom: 2em;
+    cursor: pointer;
 }
 
 .tree-item summary:before {
@@ -21,6 +22,7 @@
     padding-top: 1.5em;
     padding-bottom: 2em;
     padding-left: 4.5em;
+    cursor: pointer;
 }
 
 .child-view .tree-item:before {
@@ -34,4 +36,28 @@
 
 .filter-view {
     margin-bottom: 2em;
+}
+
+.detail-dialog {
+    width: 500px;
+    overflow: auto;
+}
+
+.detail-dialog button {
+    float: right;
+}
+
+
+.label-view {
+    font-weight: bold;
+    width: 40%;
+}
+
+.value-view {
+    width: 60%
+}
+
+.row-view {
+    width: 100%;
+    display: inline-flex;
 }

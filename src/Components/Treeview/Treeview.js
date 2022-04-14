@@ -1,12 +1,38 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './Treeview.css';
 
+
+const detailViewFields = [
+    { displayLabel: 'Category', fieldKey: 'category' },
+    { displayLabel: 'Title', fieldKey: 'title' },
+    { displayLabel: 'Metric Name', fieldKey: 'metric_name' },
+    { displayLabel: 'Metric Start', fieldKey: 'metric_start' },
+    { displayLabel: 'Metric Target', fieldKey: 'metric_target' }
+]
+
 function Treeview() {
+
     const [error, setError] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
     const [filteredTreeRes, setFilteredTreeRes] = useState([]);
     const [treeRes, setTreeRes] = useState([]);
     const [filterOptions, setFilterOptions] = useState([]);
+    const [selOption, setSelOption] = useState({});
+
+    const dialogRef = useRef();
+
+
+    // open detail dialog
+    const detailDialogHandler = (data) => {
+        dialogRef.current?.showModal();
+        setSelOption(data)
+    }
+
+    // close detail dialog
+    const closeDialogHandler = () => {
+        dialogRef.current?.close();
+        setSelOption({})
+    }
 
     // Fetch data
     const fetchOKRData = () => {
@@ -56,6 +82,7 @@ function Treeview() {
         const listItems = options.map((option, index) => (
             <div key={option.id} className="tree-item">
                 {type === 'parent' ? <details open>
+                    {/* onClick={() => detailDialogHandler(option)} */}
                     <summary>{index + 1}. {option?.title}</summary>
                     {option?.children?.length ?
                         <ol type="a" className='child-view'>
@@ -63,7 +90,7 @@ function Treeview() {
                         </ol> : null}
                 </details> :
                     <>
-                        <li>{option?.title}</li>
+                        <li><a onClick={() => detailDialogHandler(option)}>{option?.title}</a></li>
                         {/* {option?.children?.length ? <ol type="a" className='child-view'>{renderTreeView(option.children, 'children')}</ol> : null} */}
                     </>}
             </div>
@@ -81,6 +108,8 @@ function Treeview() {
         }
     }
 
+
+
     return (
         <div className='container'>
             {
@@ -94,12 +123,21 @@ function Treeview() {
                                     {filterOptions.map(option => <option value={option} key={option}>{option}</option>)}
                                 </select>
                             </form>
-
                             {renderTreeView(filteredTreeRes)}
                         </>
 
             }
-        </div>
+            <dialog className="detail-dialog" ref={dialogRef}>
+                <p>Detailed view</p>
+                {
+                    detailViewFields.map((option, index) => <dl className="row-view" key={index}>
+                        <dt className='label-view'>{option?.displayLabel}:</dt>
+                        <dd className='value-view'>{selOption?.[option?.fieldKey] || 'N/A'}</dd>
+                    </dl>)
+                }
+                <button onClick={closeDialogHandler}>close</button>
+            </dialog>
+        </div >
     );
 }
 
