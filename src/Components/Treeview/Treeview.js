@@ -4,8 +4,9 @@ import './Treeview.css';
 function Treeview() {
     const [error, setError] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
-    const [originalRes, setOriginalRes] = useState([]);
+    const [filteredTreeRes, setFilteredTreeRes] = useState([]);
     const [treeRes, setTreeRes] = useState([]);
+    const [filterOptions, setFilterOptions] = useState([]);
 
     // Fetch data
     const fetchOKRData = () => {
@@ -14,9 +15,13 @@ function Treeview() {
             .then(res => res.json())
             .then(({ data }) => {
                 setIsLoading(false);
-                setOriginalRes(data);
-                const treeRes = formatTreeView(data);
-                setTreeRes(treeRes);
+                const treeResponse = formatTreeView(data);
+                setTreeRes(treeResponse); // Original tree response
+                setFilteredTreeRes(treeResponse);
+                // For filter options
+                const categoryOptions = treeResponse.map(option => option.category);
+                const uniqueCategories = [...new Set(categoryOptions)];
+                setFilterOptions(uniqueCategories);
             }, (error) => {
                 setIsLoading(false);
                 setError(error);
@@ -24,7 +29,7 @@ function Treeview() {
     }
 
     // Format tree view from response
-    const formatTreeView = (options, id = "") => {
+    const formatTreeView = (options = [], id = "") => {
         return options.filter((item) => {
             if (id) {
                 return item["parent_objective_id"] === id;
@@ -50,7 +55,7 @@ function Treeview() {
         }
         const listItems = options.map((option, index) => (
             <div key={option.id} className="tree-item">
-                {type === 'parent' ? <details>
+                {type === 'parent' ? <details open>
                     <summary>{index + 1}. {option?.title}</summary>
                     {option?.children?.length ?
                         <ol type="a" className='child-view'>
@@ -66,12 +71,33 @@ function Treeview() {
         return listItems;
     };
 
+    // category filter change handler
+    const filterChangeHandler = (event) => {
+        if (event?.target?.value) {
+            const filteredRes = [...treeRes].filter(option => option.category === event.target.value);
+            setFilteredTreeRes(filteredRes);
+        } else {
+            setFilteredTreeRes(treeRes);
+        }
+    }
+
     return (
         <div className='container'>
             {
                 error ? <div>Error: {error.message}</div> :
                     isLoading ? <div>Loading...</div> :
-                        <ol> {renderTreeView(treeRes)}</ol>
+                        <>
+                            <form className='filter-view'>
+                                <label htmlFor="categories">Choose category:</label>
+                                <select name="categories" id="categories" onChange={filterChangeHandler}>
+                                    <option value="">Select All</option>
+                                    {filterOptions.map(option => <option value={option} key={option}>{option}</option>)}
+                                </select>
+                            </form>
+
+                            {renderTreeView(filteredTreeRes)}
+                        </>
+
             }
         </div>
     );

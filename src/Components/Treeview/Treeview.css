@@ -1,5 +1,6 @@
 .container {
     padding-right: 3em;
+    padding-left: 3em;
 }
 
 .tree-item summary {
@@ -29,4 +30,8 @@
 
 .child-view .tree-item:nth-child(odd) {
     background: #f8f9fb;
+}
+
+.filter-view {
+    margin-bottom: 2em;
 }
