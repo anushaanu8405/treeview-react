@@ -1,0 +1,32 @@
+.container {
+    padding-right: 3em;
+}
+
+.tree-item summary {
+    padding-bottom: 2em;
+}
+
+.tree-item summary:before {
+    content: '\1F464';
+    padding-right: 2em;
+}
+
+.child-view {
+    padding-left: 0em;
+}
+
+.child-view .tree-item {
+    display: flex;
+    padding-top: 1.5em;
+    padding-bottom: 2em;
+    padding-left: 4.5em;
+}
+
+.child-view .tree-item:before {
+    content: '\1F464';
+    padding-right: 2em;
+}
+
+.child-view .tree-item:nth-child(odd) {
+    background: #f8f9fb;
+}
